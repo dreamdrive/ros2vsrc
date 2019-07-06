@@ -33,3 +33,10 @@ rosrun ros2vsrc vsrc_control
 
 roscoreはどちらに置いても構いません。
 これで、LAN(WiFi)経由で、VS-RC003の制御が出来ます。
+
+### 謝辞
+vsrc_connectの作成に至っては、こちらの記事を参考にさせていただきました。ありがとうございます。  
+> https://qiita.com/srs/items/efaa8dc0a6d580c7c423  
+> https://github.com/project-srs/ros_lecture/blob/master/hard_lecture/src/hard_serialport_retry.cpp  
+
+ほぼコピペですm(__)m 
