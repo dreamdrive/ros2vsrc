@@ -1,5 +1,5 @@
 # ros2vsrc
-ROSを用いて、VS-RC003をシリアル経由で制御するパッケージ
+ROSを用いて、VS-RC003をシリアル経由で制御するパッケージ  
 vsrc_controlノードとvsrc_connectノードで構成されます。
 
 ## vsrc_control
