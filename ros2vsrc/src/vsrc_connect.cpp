@@ -1,13 +1,15 @@
-// ROSƒƒbƒZ[ƒW‚ğ‰î‚µ‚ÄAóM‚µ‚½VS-RC003‚ÌƒVƒŠƒAƒ‹ƒRƒ}ƒ“ƒh‚ğAƒVƒŠƒAƒ‹ƒ|[ƒg‚ğŒo—R‚µ‚ÄVS-RC003‚É‘—M‚¨‚æ‚ÑóM
+ï»¿// vsrc_connect
+// VS-RC003ç”¨ã®ã‚³ãƒãƒ³ãƒ‰ã‚’vsrc_controlã‹ã‚‰subscribeã—ã€ã‚·ãƒªã‚¢ãƒ«ãƒãƒ¼ãƒˆã‚’é€šã˜ã¦VS-RC003ã¨é€šä¿¡ã™ã‚‹ãƒãƒ¼ãƒ‰
 // 
-// RaspberryPi‚ÅÀs‚³‚ê‚é‚±‚Æ‚ğ‘z’è‚µ‚Äì‚Á‚Ä‚¢‚Ü‚·B
-// ƒfƒoƒCƒX–¼‚Í "/dev/ttyAMA0" ‚ÅARaspberryPi‚ÌGPIO‚ğVS-RC003‚ÌCN6‚à‚µ‚­‚ÍCN7‚ÌTxD,RxD,GND‚ÆA‚»‚ê‚¼‚ê’¼Œ‹‚µ‚Äg—p‚·‚é
-// PC‚©‚çUSBƒVƒŠƒAƒ‹‚Å‚àg‚¦‚Ü‚·‚ªA“K‹XƒfƒoƒCƒX–¼‚ğ•ÏX‚·‚é‚Ì‚ÆAVS-RC003‚ÌUART‚É‡‚í‚¹‚ÄƒŒƒxƒ‹•ÏŠ·‚µ‚Ä‚­‚¾‚³‚¢B
+// RaspberryPiã§å®Ÿè¡Œã•ã‚Œã‚‹ã“ã¨ã‚’æƒ³å®šã—ã¦ä½œã£ã¦ã„ã¾ã™ã€‚
+// ãƒ‡ãƒã‚¤ã‚¹åã¯ "/dev/ttyAMA0" ã§ã€RaspberryPiã®GPIOã‚’VS-RC003ã®CN6ã‚‚ã—ãã¯CN7ã®TxD,RxD,GNDã¨ã€ãã‚Œãã‚Œç›´çµã—ã¦ä½¿ç”¨ã™ã‚‹
+// PCã‹ã‚‰USBã‚·ãƒªã‚¢ãƒ«ã§ã‚‚ä½¿ãˆã¾ã™ãŒã€é©å®œãƒ‡ãƒã‚¤ã‚¹åã‚’å¤‰æ›´ã™ã‚‹ã®ã¨ã€VS-RC003ã®UARTã«åˆã‚ã›ã¦ãƒ¬ãƒ™ãƒ«å¤‰æ›ã—ã¦ãã ã•ã„ã€‚
 // 
-// (’ˆÓ!!) ƒRƒ}ƒ“ƒh‚Í‰üsƒR[ƒh‚È‚µ‚Ì³–¡‚ÌƒRƒ}ƒ“ƒh•”•ª‚Ì‚İ‚ÅA‰üsƒR[ƒh‚ÍƒVƒŠƒAƒ‹‘—M‚É‚±‚Ìƒm[ƒh“à‚Å•t—^‚µ‚Ü‚·B
+// (æ³¨æ„!!) ã‚³ãƒãƒ³ãƒ‰ã¯æ”¹è¡Œã‚³ãƒ¼ãƒ‰ãªã—ã®æ­£å‘³ã®ã‚³ãƒãƒ³ãƒ‰éƒ¨åˆ†ã®ã¿ã§ã€æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã¯ã‚·ãƒªã‚¢ãƒ«é€ä¿¡æ™‚ã«ã“ã®ãƒãƒ¼ãƒ‰å†…ã§ä»˜ä¸ã—ã¾ã™ã€‚
 // 
-// ‚±‚¿‚ç‚Ì‹L–‚ğQl‚É‚³‚¹‚Ä‚¢‚½‚¾‚«‚Ü‚µ‚½¦‚Ù‚ÚƒRƒsƒym(__)m > https://qiita.com/srs/items/efaa8dc0a6d580c7c423
-// ŠY“–‹L–‚Ìƒ\[ƒXƒR[ƒh > https://github.com/project-srs/ros_lecture/blob/master/hard_lecture/src/hard_serialport_retry.cpp
+// ã“ã¡ã‚‰ã®è¨˜äº‹ã‚’å‚è€ƒã«ã•ã›ã¦ã„ãŸã ãã¾ã—ãŸã€‚ã‚ã‚ŠãŒã¨ã†ã”ã–ã„ã¾ã™ã€‚
+// https://qiita.com/srs/items/efaa8dc0a6d580c7c423
+// https://github.com/project-srs/ros_lecture/blob/master/hard_lecture/src/hard_serialport_retry.cpp
 //
 // MIT License
 // Copyright (c) 2019 Hirokazu Onomichi
@@ -42,7 +44,7 @@ public:
         //load configuration
         struct termios conf_tio;
         tcgetattr(fd,&conf_tio);
-        //set baudrate : VS-RC003 = ƒ{[ƒŒ[ƒg115200bps
+        //set baudrate : VS-RC003 = ãƒœãƒ¼ãƒ¬ãƒ¼ãƒˆ115200bps
         speed_t BAUDRATE = B115200;
         cfsetispeed(&conf_tio, BAUDRATE);
         cfsetospeed(&conf_tio, BAUDRATE);
@@ -100,12 +102,12 @@ public:
 };
 diagnostic_updater::Updater *p_updater;
 ros::Publisher serial_pub;
-std::string device_name="/dev/ttyAMA0";		// Raspberry Pi2‚ÌƒVƒŠƒAƒ‹ƒ|[ƒg
+std::string device_name="/dev/ttyAMA0";		// Raspberry Pi2ã®ã‚·ãƒªã‚¢ãƒ«ãƒãƒ¼ãƒˆ
 serial_stream ss0;
 
 void serial_callback(const std_msgs::String& serial_msg){
     ss0.ss_write(serial_msg.data);
-    ss0.ss_write("\n");				// VS-RC003‚ÌƒRƒ}ƒ“ƒhÅŒã‚É‰üsƒR[ƒh‚ğ•t‰Á‚·‚é
+    ss0.ss_write("\n");				// VS-RC003ã®ã‚³ãƒãƒ³ãƒ‰æœ€å¾Œã«æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã‚’ä»˜åŠ ã™ã‚‹
 }
 bool first_time=true;
 bool last_connected=false;

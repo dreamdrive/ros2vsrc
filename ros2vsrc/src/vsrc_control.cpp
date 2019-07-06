@@ -1,5 +1,6 @@
 // vsrc_control.cpp
-// ジョイスティックの入力(joy_node)からVS-RC003のコントローラー制御コマンドを生成し、vsrc_connectノードに送信する
+// joy_nodeからジョイスティックのトピック(/joy)をsubscribeし、VS-RC003用のコマンドに変換し、vsrc_connectノードに対してPublishするノード
+//
 // 接続するコントローラーは、XBOX360コントローラーを想定しています
 //
 // MIT License
