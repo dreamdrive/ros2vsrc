@@ -1,4 +1,5 @@
-﻿// vsrc_connect
+// vsrc_connect (テストバージョンのため、今後はvsrc_connect2を使用することを推奨します)
+//
 // VS-RC003用のコマンドをvsrc_controlからsubscribeし、シリアルポートを通じてVS-RC003と通信するノード
 // 
 // RaspberryPiで実行されることを想定して作っています。
@@ -6,10 +7,21 @@
 // PCからUSBシリアルでも使えますが、適宜デバイス名を変更するのと、VS-RC003のUARTに合わせてレベル変換してください。
 // 
 // (注意!!) コマンドは改行コードなしの正味のコマンド部分のみで、改行コードはシリアル送信時にこのノード内で付与します。
+//
+// (使い方例1 : サーボトルクON)
+// rostopic pub /vsrc_write std_msgs/String "w 2009f6 01 00"
+// (使い方例2 : △ボタン押下)
+// rostopic pub /vsrc_write std_msgs/String "w 2009e2 10 00"
+// (使い方例3 : △ボタン解放)
+// rostopic pub /vsrc_write std_msgs/String "w 2009e2 00 00"
+// (使い方例4 : サーボトルクOFF)
+// rostopic pub /vsrc_write std_msgs/String "w 2009f6 00 00"
 // 
 // こちらの記事を参考にさせていただきました。ありがとうございます。
 // https://qiita.com/srs/items/efaa8dc0a6d580c7c423
 // https://github.com/project-srs/ros_lecture/blob/master/hard_lecture/src/hard_serialport_retry.cpp
+//
+// 20190727 : bug fix (シリアル通信の改行コードの設定について)
 //
 // MIT License
 // Copyright (c) 2019 Hirokazu Onomichi
@@ -22,6 +34,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
+
+#define SERIAL_PORT "/dev/ttyAMA0"	// RaspberryPiのシリアルポート デバイス名
 
 class serial_stream{
 private:
@@ -50,6 +64,10 @@ public:
         cfsetospeed(&conf_tio, BAUDRATE);
         //non canonical, non echo back
         conf_tio.c_lflag &= ~(ECHO | ICANON);
+    	// inputの設定
+        conf_tio.c_iflag &= IGNCR;	// 受信したIGNCR (CRLF)のCRを無視する(そのまま受信する) !!!
+		// outputの設定
+        conf_tio.c_oflag &= ~ONLCR;	// 送信時LFをCRLFに変換する機能:ONLCRを反転(OFF)にする !!!
         //non blocking
         conf_tio.c_cc[VMIN]=0;
         conf_tio.c_cc[VTIME]=0;
@@ -102,12 +120,12 @@ public:
 };
 diagnostic_updater::Updater *p_updater;
 ros::Publisher serial_pub;
-std::string device_name="/dev/ttyAMA0";		// Raspberry Pi2のシリアルポート
+std::string device_name = SERIAL_PORT;
 serial_stream ss0;
 
 void serial_callback(const std_msgs::String& serial_msg){
     ss0.ss_write(serial_msg.data);
-    ss0.ss_write("\n");				// VS-RC003のコマンド最後に改行コードを付加する
+    ss0.ss_write("\r\n");				// VS-RC003の改行コードをつける
 }
 bool first_time=true;
 bool last_connected=false;
@@ -123,9 +141,7 @@ void timer_callback(const ros::TimerEvent&){
         else{
             std::string recv_data=ss0.ss_read();
             if(recv_data.size()>0){
-                //printf("recv:%03d %s\n",(int)recv_data.size(),recv_data.c_str());
-                //
-		std_msgs::String serial_msg;
+                std_msgs::String serial_msg;
                 serial_msg.data=recv_data;
                 serial_pub.publish(serial_msg);
             }

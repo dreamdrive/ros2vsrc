@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -48,11 +49,13 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
+add_message_files(
+  FILES
+  VsrcState.msg
+  VsrcControl.msg
 #   Message1.msg
 #   Message2.msg
-# )
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -69,10 +72,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -106,7 +109,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ros2vsrc
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -137,7 +140,9 @@ include_directories(
 # add_executable(${PROJECT_NAME}_node src/ros2vsrc_node.cpp)
 
 add_executable(vsrc_connect src/vsrc_connect.cpp)
+add_executable(vsrc_connect2 src/vsrc_connect2.cpp)
 add_executable(vsrc_control src/vsrc_control.cpp)
+add_executable(vsrc_control2 src/vsrc_control2.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -147,7 +152,7 @@ add_executable(vsrc_control src/vsrc_control.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(vsrc_connect2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -158,7 +163,15 @@ target_link_libraries(vsrc_connect
   ${catkin_LIBRARIES}
 )
 
+target_link_libraries(vsrc_connect2
+  ${catkin_LIBRARIES}
+)
+
 target_link_libraries(vsrc_control
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(vsrc_control2
   ${catkin_LIBRARIES}
 )
 

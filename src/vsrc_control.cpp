@@ -1,11 +1,14 @@
-// vsrc_control.cpp
+// vsrc_control.cpp (テストバージョンのため、今後はvsrc_connect2およびvsrc_control2を使用することを推奨します)
+//
 // joy_nodeからジョイスティックのトピック(/joy)をsubscribeし、VS-RC003用のコマンドに変換し、vsrc_connectノードに対してPublishするノード
+// こちらはvsrc_connect専用のノードになります。
 //
 // 接続するコントローラーは、XBOX360コントローラーを想定しています
 //
+// 20190727 : bug fix
+//
 // MIT License
 // Copyright (c) 2019 Hirokazu Onomichi
-
 
 #include "ros/ros.h"
 #include "sensor_msgs/Joy.h"
@@ -18,11 +21,10 @@ int but2[6];
 float axes1[8];
 int axes2[8];
 int sv_power = 0;
-int f_shiitake_b = 0;
 
 void joy_callback(const sensor_msgs::Joy& joy_msg){
 
-  	axes1[0]=joy_msg.axes[0];	// 左スティック横方向(XBOX360)	左:1.0?右-1.0
+	axes1[0]=joy_msg.axes[0];	// 左スティック横方向(XBOX360)	左:1.0?右-1.0
 	axes1[1]=joy_msg.axes[1];	// 左スティック縦方向(XBOX360)	上:1.0?下-1.0
 	axes1[2]=joy_msg.axes[2];	// 右スティック横方向(XBOX360)	左:1.0?右-1.0
 	axes1[3]=joy_msg.axes[3];	// 右スティック縦方向(XBOX360)	上:1.0?下-1.0
@@ -94,15 +96,14 @@ void joy_callback(const sensor_msgs::Joy& joy_msg){
 	}else{
 		but2[5] = 0;
 	}
-
 }
 
 int main(int argc, char **argv){
 	ros::init(argc, argv, "vsrc_control");
 	ros::NodeHandle n;
 	int tmp1,tmp2;
+	int f_shiitake_b = 0;
 	short stk_rx,stk_ry,stk_lx,stk_ly;
-	//char numStr[15];
 	char rbuf[BUFF_SZ],wbuf[BUFF_SZ];
 
 	//publish
@@ -136,16 +137,12 @@ int main(int argc, char **argv){
 
 			stk_lx = (short)(127.0 * axes1[0]);		
 			stk_ly = (short)(127.0 * axes1[1]);
-			stk_rx = (short)(127.0 * axes1[3]);		
-			stk_ry = (short)(127.0 * axes1[4]);
+			stk_rx = (short)(127.0 * axes1[2]);		
+			stk_ry = (short)(127.0 * axes1[3]);
 
 			//改行コードを含まないVS-RC003コマンド生成
 			sprintf(wbuf,"w 2009e2 %02x %02x 00 00 00 00 %02x %02x %02x %02x %02x %02x %02x %02x", tmp1,tmp2,stk_rx&0x00ff,(stk_rx>>8)&0x00ff,stk_ry&0x00ff,(stk_ry>>8)&0x00ff,stk_lx&0x00ff,(stk_lx>>8)&0x00ff,stk_ly&0x00ff,(stk_ly>>8)&0x00ff);
-			//                     ==(241)== -242- -243- ==(244)== ==(245)== ==(246)== ==(247)==    
-
-			// test
-			//printf("w 2009e2 %02x 00", tmp1);
-			//printf("%02x %02x\n",stk_ly&0x00ff,(stk_ly>>8)&0x00ff);
+			//                     ==(241)== -242- -243- ==(244)== ==(245)== ==(246)== ==(247)==
 
 			f_shiitake_b = 0;
 		}
