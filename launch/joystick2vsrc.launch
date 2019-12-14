@@ -1,0 +1,9 @@
+<launch>
+	<arg name="serialdev" default="/dev/ttyUSB0" />
+
+	<node name="joy" pkg="joy" type="joy_node" output="screen"/>
+	<node name="vsrc_control" pkg="ros2vsrc" type="vsrc_control" output="screen"/>
+	<node name="vsrc_connect" pkg="ros2vsrc" type="vsrc_connect" output="screen">
+		<param name="serialdev" value="$(arg serialdev)"/>
+	</node>
+</launch>
